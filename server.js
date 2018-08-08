@@ -1,6 +1,8 @@
 //Create variables that will call other requirements for the app
 const express = require("express");
 const mongoose = require("mongoose");
+const bodyParser = require("body-parser");
+const passport = require("passport");
 
 //pass urls to the api routes
 const users = require("./routes/api/users");
@@ -9,6 +11,10 @@ const posts = require("./routes/api/posts");
 
 //app using express
 const app = express();
+
+// Body parser middleware
+app.use(bodyParser.urlencoded({ extended: false }));
+app.use(bodyParser.json());
 
 //DB Config
 const db = require("./config/keys").mongoURI;
@@ -20,7 +26,11 @@ mongoose
   //If there is an issue with Authentication in Mongo
   .catch(err => console.log(err));
 
-app.get("/", (req, res) => res.send("Hello!"));
+// Passport middleware
+app.use(passport.initialize());
+
+// Passport Config
+require("./config/passport")(passport);
 
 //Use routes
 app.use("/api/users", users);
